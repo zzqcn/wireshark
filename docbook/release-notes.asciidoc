@@ -1,0 +1,146 @@
+= Wireshark wireshark-version:[] Release Notes
+
+== What is Wireshark?
+
+Wireshark is the world's most popular network protocol analyzer. It is
+used for troubleshooting, analysis, development and education.
+
+== What's New
+
+=== Bug Fixes
+
+// Link templates: ws-buglink:5000[]  ws-buglink:6000[Wireshark bug]  cve-idlink:2013-2486[]
+
+The following vulnerabilities have been fixed.
+
+* ws-salink:2015-19[]
++
+WCCP dissector crash.
+// Fixed in master: g524ed1d
+// Fixed in master-1.12: g92483af
+(ws-buglink:11153[])
+//cve-idlink:2015-XXXX[]
+
+* ws-salink:2015-20[]
++
+GSM DTAP dissector crash.
+// Fixed in master: gd93be95
+// Fixed in master-1.12: g9fa6881
+(ws-buglink:11201[])
+//cve-idlink:2015-XXXX[]
+
+
+The following bugs have been fixed:
+
+//* Wireshark always manages to score tickets for Burning Man, Coachella, and
+//  SXSW while you end up working double shifts. (ws-buglink:0000[])
+// cp /dev/null /tmp/buglist.txt ; for bugnumber in `git log --stat v1.12.6rc0..| grep ' Bug:' | cut -f2 -d: | sort -n -u ` ; do gen-bugnote $bugnumber; pbpaste >> /tmp/buglist.txt; done
+
+* Wireshark 1.12.1 crashes on startup on Mac OS X 10.10 (Yosemite). (ws-buglink:10640[])
+
+* Wireshark does not display X.400 addresses correctly. (ws-buglink:11210[])
+
+* Reproducible crash in "Edit column details" dialog. (ws-buglink:11245[])
+
+* Subnet name resolution doesn't always work. (ws-buglink:11247[])
+
+* SIP MIME body containing ISUP does not decode properly. (ws-buglink:11249[])
+
+* iSCSI: Read(10): shows incorrect "Data In" & "Response" frame number. (ws-buglink:11250[])
+
+* tshark -z io,stat,1,SUM(ip.len) reports invalid stats, triggers ASAN buffer overrun. (ws-buglink:11262[])
+
+* Port Control Protocol packet dissection decodes R bit incorrectly. (ws-buglink:11278[])
+
+
+=== New and Updated Features
+
+There are no new features in this release.
+
+=== New Protocol Support
+
+There are no new protocols in this release.
+
+=== Updated Protocol Support
+
+--sort-and-group--
+GSM DTAP
+iSCSI
+P1
+PCP
+SIP
+WCCP
+--sort-and-group--
+
+=== New and Updated Capture File Support
+
+There is no new or updated capture file support in this release.
+//--sort-and-group--
+//--sort-and-group--
+
+== Getting Wireshark
+
+Wireshark source code and installation packages are available from
+http://www.wireshark.org/download.html.
+
+=== Vendor-supplied Packages
+
+Most Linux and Unix vendors supply their own Wireshark packages. You can
+usually install or upgrade Wireshark using the package management system
+specific to that platform. A list of third-party packages can be found
+on the http://www.wireshark.org/download.html#thirdparty[download page]
+on the Wireshark web site.
+
+== File Locations
+
+Wireshark and TShark look in several different locations for preference
+files, plugins, SNMP MIBS, and RADIUS dictionaries. These locations vary
+from platform to platform. You can use About→Folders to find the default
+locations on your system.
+
+== Known Problems
+
+Dumpcap might not quit if Wireshark or TShark crashes.
+(ws-buglink:1419[])
+
+The BER dissector might infinitely loop.
+(ws-buglink:1516[])
+
+Capture filters aren't applied when capturing from named pipes.
+(ws-buglink:1814[])
+
+Filtering tshark captures with read filters (-R) no longer works.
+(ws-buglink:2234[])
+
+The 64-bit Windows installer does not support Kerberos decryption.
+(http://wiki.wireshark.org/Development/Win64[Win64 development page])
+
+Resolving (ws-buglink:9044[]) reopens (ws-buglink:3528[]) so that Wireshark
+no longer automatically decodes gzip data when following a TCP stream.
+
+Application crash when changing real-time option.
+(ws-buglink:4035[])
+
+Hex pane display issue after startup.
+(ws-buglink:4056[])
+
+Packet list rows are oversized.
+(ws-buglink:4357[])
+
+Wireshark and TShark will display incorrect delta times in some cases.
+(ws-buglink:4985[])
+
+== Getting Help
+
+Community support is available on http://ask.wireshark.org/[Wireshark's
+Q&A site] and on the wireshark-users mailing list. Subscription
+information and archives for all of Wireshark's mailing lists can be
+found on http://www.wireshark.org/lists/[the web site].
+
+Official Wireshark training and certification are available from
+http://www.wiresharktraining.com/[Wireshark University].
+
+== Frequently Asked Questions
+
+A complete FAQ is available on the
+http://www.wireshark.org/faq.html[Wireshark web site].

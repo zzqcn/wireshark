@@ -1,0 +1,120 @@
+# Makefile.common
+#     Contains the stuff from Makefile.am and Makefile.nmake that is
+#     a) common to both files and
+#     b) portable between both files
+#
+# Wireshark - Network traffic analyzer
+# By Gerald Combs <gerald@wireshark.org>
+# Copyright 1998 Gerald Combs
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+
+# C source files that are part of the libwsutil source; this includes only
+# .c files, not YACC or Lex or... files (as Makefile.nmake maps this list
+# into a list of object files by replacing ".c" with ".obj") or files
+# generated from YACC or Lex files (as Automake doesn't want them in
+# _SOURCES variables).
+LIBWSUTIL_SRC = 	\
+	adler32.c	\
+	aes.c		\
+	airpdcap_wep.c	\
+	base64.c	\
+	bitswap.c	\
+	buffer.c	\
+	crash_info.c	\
+	crc6.c		\
+	crc7.c		\
+	crc8.c		\
+	crc10.c		\
+	crc11.c		\
+	crc16.c		\
+	crc16-plain.c	\
+	crc32.c		\
+	crcdrm.c	\
+	des.c		\
+	eax.c		\
+	filesystem.c	\
+	g711.c		\
+	md4.c		\
+	md5.c		\
+	mpeg-audio.c	\
+	nstime.c	\
+	plugins.c	\
+	privileges.c	\
+	sha1.c		\
+	strnatcmp.c	\
+	str_util.c	\
+	rc4.c		\
+	report_err.c	\
+	tempfile.c	\
+	time_util.c	\
+	type_util.c	\
+	u3.c		\
+	unicode-utils.c
+
+# Header files that are not generated from other files
+LIBWSUTIL_INCLUDES = 	\
+	adler32.h	\
+	aes.h		\
+	base64.h	\
+	bits_ctz.h	\
+	bits_count_ones.h	\
+	bitswap.h		\
+	buffer.h	\
+	crash_info.h	\
+	crc6.h		\
+	crc7.h		\
+	crc8.h		\
+	crc10.h		\
+	crc11.h		\
+	crc16.h		\
+	crc16-plain.h	\
+	crc32.h		\
+	crcdrm.h	\
+	des.h		\
+	eax.h		\
+	filesystem.h	\
+	g711.h		\
+	md4.h		\
+	md5.h		\
+	mpeg-audio.h	\
+	nstime.h	\
+	plugins.h	\
+	privileges.h	\
+	sha1.h		\
+	sign_ext.h	\
+	strnatcmp.h	\
+	str_util.h	\
+	pint.h		\
+	rc4.h		\
+	report_err.h	\
+	tempfile.h	\
+	time_util.h	\
+	type_util.h	\
+	u3.h		\
+	unicode-utils.h
+
+#
+# Editor modelines  -  https://www.wireshark.org/tools/modelines.html
+#
+# Local variables:
+# c-basic-offset: 8
+# tab-width: 8
+# indent-tabs-mode: t
+# End:
+#
+# vi: set shiftwidth=8 tabstop=8 noexpandtab:
+# :indentSize=8:tabSize=8:noTabs=false:
+#
