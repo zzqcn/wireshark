@@ -1,2 +1,2 @@
-#define GITVERSION "Git Rev Unknown"
-#define GITBRANCH "unknown"
+#define GITVERSION "65011cc"
+#define GITBRANCH "master"

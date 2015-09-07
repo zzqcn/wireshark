@@ -6,6 +6,7 @@ include ..\config.nmake
 
 PLUGIN_LIST = \
 	docsis      \
+	dpi         \
 	ethercat    \
 	gryphon     \
 	irda        \

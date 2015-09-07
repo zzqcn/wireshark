@@ -697,6 +697,7 @@ if(ENABLE_PLUGINS)
 	set(PLUGIN_INSTALL_DIR "${CMAKE_INSTALL_LIBDIR}/@CPACK_PACKAGE_NAME@/plugins/${CPACK_PACKAGE_VERSION}")
 	set(PLUGIN_SRC_DIRS
 		plugins/docsis
+        plugins/dpi
 		plugins/ethercat
 		plugins/gryphon
 		plugins/irda
