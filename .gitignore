@@ -1,7 +1,32 @@
-# dir
+# dir & special files
 build/
+wireshark-gtk2/
 macosx-support-libs/
 macosx-support-lib-patches/
+image/*.rc
+image/*.res
+image/wireshark.exe.manifest
+doc/*
+plugins/**/*.rc
+plugins/**/*.res
+plugins/**/*.exp
+epan/dfilter/grammar.*
+epan/dfilter/scanner.c
+epan/dtd_grammar.*
+epan/dtd_preparse.c
+epan/dissectors/packet-ncp2222.c
+epan/dissectors/register-cache.pkl
+epan/libwireshark.exp
+epan/ps.c
+epan/uat_load.c
+epan/wslua/declare_wslua.h
+epan/wslua/init.lua
+epan/wslua/register_wslua.c
+config.h
+doxygen.cfg
+_libs_check_
+
+
 
 # Object files
 *.o
@@ -35,3 +60,4 @@ macosx-support-lib-patches/
 
 # Debug files
 *.dSYM/
+*.pdb
