@@ -39,7 +39,8 @@ typedef struct _conversation_t {
     guint32     port_type;      /**< port_type (e.g. PT_TCP) */
     guint32     src_port;       /**< source port */
     guint32     dst_port;       /**< destination port */
-    guint32     svc_id;
+    //guint32     svc_id;
+    gchar       svc_name[17];
     conv_id_t   conv_id;        /**< conversation id */
 
     guint64     rx_frames;      /**< number of received packets */
@@ -151,6 +152,7 @@ add_conversation_table_data_with_conv_id(
     int num_bytes,
     nstime_t *ts,
     SAT_E sat,
-    int port_type);
+    int port_type,
+    gchar* svc_name);
 
 #endif /* __CONVERSATIONS_TABLE_H__ */

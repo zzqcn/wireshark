@@ -259,6 +259,7 @@ void camrule_ctx_init(camrule_ctx_t* ctx)
 int camrule_ctx_load(camrule_ctx_t* ctx, const char* path);
 int camrule_ctx_match(camrule_ctx_t* ctx, 
             const uint8_t* data, uint32_t len,
+            uint32_t ipproto,
             camrule_match_result_t* reult);
 
 #endif /* __CAMRULE_H__ */

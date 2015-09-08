@@ -11,6 +11,8 @@
 #include <string.h>
 #include <ctype.h>
 #include <assert.h>
+#include <epan/value_string.h>
+#include <epan/ipproto.h>
 #include "camrule.h"
 
 
@@ -84,7 +86,7 @@ ssize_t getline(char** line, size_t* n, FILE* fp)
     ssize_t c, i;
     
     if(NULL == line || NULL == fp || NULL == n)
-        return 0;
+        return -1;
     if(NULL == *line)
         *line = malloc(2048);
     
@@ -92,7 +94,7 @@ ssize_t getline(char** line, size_t* n, FILE* fp)
     while((c = fgetc(fp)) != EOF && c != '\n' && i<2046)
         (*line)[i++]=c;
     if(c == EOF && i==0)
-        return 0;
+        return -1;
     if(c == '\n')
         (*line)[i++]=c;
     (*line)[i] = '\0';
@@ -158,9 +160,6 @@ int get_maskstr_from_ptnstr(const char* ptnStr,
 
         if(type == PT_ASCII) // ASCII
         {
-            //if( (ch >= 'a' && ch <= 'z') ||
-            //    (ch >= 'A' && ch <= 'Z') )
-
             if(isalpha(ch))
             {
                 if(chkCapital)
@@ -276,7 +275,6 @@ static int camrule_domatch(camrule_t* rule, const uint8_t* data)
 {
     int ret = 1;
     uint32_t i;
-    //int bit_shift = 0, mi = 0;
 
     assert(data != NULL && rule->cpl_ptn != NULL && rule->cpl_ptn_len > 0);
 
@@ -551,7 +549,7 @@ int camrule_ctx_load(camrule_ctx_t* ctx, const char* path)
                 line = NULL;
             }
             
-            if(read_cnt == 0)
+            if(0 == read_cnt || -1 == read_cnt)
                 break;
             continue;
         }
@@ -578,7 +576,8 @@ int camrule_ctx_load(camrule_ctx_t* ctx, const char* path)
         }
         free(line); line = NULL;
     }
-    while(read_cnt != -1);
+    //while(read_cnt != -1);
+    while(n_rules < CAMRULE_MAX);
 
 
     for(i=0; i<n_rules; i++)
@@ -749,15 +748,24 @@ int camrule_ctx_load(camrule_ctx_t* ctx, const char* path)
 
 int camrule_ctx_match(camrule_ctx_t* ctx, 
                 const uint8_t* data, uint32_t len,
+                uint32_t ipproto,
                 camrule_match_result_t* result)
 {
     //int ret;
     uint32_t i, max;
     //camrule_match_result_t* result;
     
+    if(IP_PROTO_TCP != ipproto && IP_PROTO_UDP != ipproto)
+        return 0;
+    
     max = CAMRULE_MAX;
     for(i=0; i<ctx->rules_cnt; i++)
     {
+        if(!ctx->rules[i]->isCheckTCP && ipproto == IP_PROTO_TCP)
+            continue;
+        if(!ctx->rules[i]->isCheckUDP && ipproto == IP_PROTO_UDP)
+            continue;
+
         if(camrule_match(ctx->rules[i], data, len, result))
         {
             if(i == 0 || ctx->rules[max]->ptnLowPri < ctx->rules[i]->ptnLowPri)

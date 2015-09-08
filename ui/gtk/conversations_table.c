@@ -424,7 +424,8 @@ ct_sort_func(GtkTreeModel *model,
     case DST_PORT_COLUMN: /* Destination port */
         CMP_NUM(conv1->dst_port, conv2->dst_port);
     case SVC_COLUMN:
-        return 0;
+        //return 0;
+        return strcmp(conv1->svc_name, conv2->svc_name);
     case START_COLUMN: /* Start time */
         return nstime_cmp(&conv1->start_time, &conv2->start_time);
     }
@@ -2119,6 +2120,7 @@ draw_ct_table_data(conversations_table *ct)
                   SRC_PORT_COLUMN, entries[1],
                   DST_ADR_COLUMN,  entries[2],
                   DST_PORT_COLUMN, entries[3],
+                  SVC_COLUMN,      conversation->svc_name, 
                   PACKETS_COLUMN,  conversation->tx_frames+conversation->rx_frames,
                   BYTES_COLUMN,    conversation->tx_bytes+conversation->rx_bytes,
                   PKT_AB_COLUMN,   conversation->tx_frames,
@@ -2373,7 +2375,7 @@ init_ct_table_page(conversations_table *conversations, GtkWidget *vbox, gboolean
                                 G_TYPE_STRING,   /* Port A    */
                                 G_TYPE_STRING,   /* Address B */
                                 G_TYPE_STRING,   /* Port B    */
-                                G_TYPE_UINT,     /* Service */
+                                G_TYPE_STRING,   /* SVC */
                                 G_TYPE_UINT64,   /* Packets   */
                                 G_TYPE_UINT64,   /* Bytes     */
                                 G_TYPE_UINT64,   /* Packets A->B */
@@ -3083,7 +3085,8 @@ conversation_match(gconstpointer v, gconstpointer w)
 void
 add_conversation_table_data(conversations_table *ct, const address *src, const address *dst, guint32 src_port, guint32 dst_port, int num_frames, int num_bytes, nstime_t *ts, SAT_E sat, int port_type_val)
 {
-    add_conversation_table_data_with_conv_id(ct, src, dst, src_port, dst_port, CONV_ID_UNSET, num_frames, num_bytes, ts, sat, port_type_val);
+    add_conversation_table_data_with_conv_id(ct, src, dst, src_port, dst_port, CONV_ID_UNSET, 
+            num_frames, num_bytes, ts, sat, port_type_val, NULL);
 }
 
 void
@@ -3098,7 +3101,8 @@ add_conversation_table_data_with_conv_id(
     int num_bytes,
     nstime_t *ts,
     SAT_E sat,
-    int port_type_val)
+    int port_type_val,
+    gchar* svc_name)
 {
     const address *addr1, *addr2;
     guint32 port1, port2;
@@ -3164,7 +3168,10 @@ add_conversation_table_data_with_conv_id(
         conv.port_type = port_type_val;
         conv.src_port = port1;
         conv.dst_port = port2;
-        conv.svc_id = 0;
+        //conv.svc_id = 0;
+        // g_strlcpy is NOT as strcpy, it will make surce dest str is null-terminated.
+        if(svc_name != NULL)
+            g_strlcpy(conv.svc_name, svc_name, 17);
         conv.conv_id = conv_id;
         conv.rx_frames = 0;
         conv.tx_frames = 0;
@@ -3198,6 +3205,10 @@ add_conversation_table_data_with_conv_id(
 
     /* update the conversation struct */
     conversation->modified = TRUE;
+
+    if(svc_name != NULL)
+        g_strlcpy(conversation->svc_name, svc_name, 17);
+
     if ( (!CMP_ADDRESS(src, addr1)) && (!CMP_ADDRESS(dst, addr2)) && (src_port==port1) && (dst_port==port2) ) {
         conversation->tx_frames += num_frames;
         conversation->tx_bytes += num_bytes;
