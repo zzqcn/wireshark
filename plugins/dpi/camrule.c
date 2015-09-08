@@ -1,4 +1,4 @@
-/**
+﻿/**
  * @file
  * @brief CAM特征.
  * @author Zhao Ziqing <psyc209@163.com>
@@ -8,6 +8,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <ctype.h>
 #include <assert.h>
 #include "camrule.h"
@@ -75,6 +76,9 @@ char* trim(char *str)
 }
 
 #ifndef __GNUC__
+#ifndef ssize_t
+typedef int ssize_t;
+#endif
 ssize_t getline(char** line, size_t* n, FILE* fp)
 {
     ssize_t c, i;
@@ -97,8 +101,13 @@ ssize_t getline(char** line, size_t* n, FILE* fp)
     return i;
 }
 
+#ifndef strncasecmp
+#define strncasecmp _strnicmp
+#endif
+
 /*
- * Find the first occurrence of find in s, ignore case.
+ * @brief Find the first occurrence of find in s, ignore case.
+ * @ref http://www.opensource.apple.com/source/Libc/Libc-320.1.3/string/FreeBSD/strcasestr.c
  */
 static inline
 char *strcasestr(s, find)
