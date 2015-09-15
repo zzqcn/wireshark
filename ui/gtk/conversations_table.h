@@ -25,6 +25,7 @@
 #define __CONVERSATIONS_TABLE_H__
 
 #include <epan/conv_id.h>
+#include <epan/dpi.h>
 #include "sat.h"
 
 /** @file
@@ -39,8 +40,7 @@ typedef struct _conversation_t {
     guint32     port_type;      /**< port_type (e.g. PT_TCP) */
     guint32     src_port;       /**< source port */
     guint32     dst_port;       /**< destination port */
-    //guint32     svc_id;
-    gchar       svc_name[17];
+    dpi_t       dpi_info; 
     conv_id_t   conv_id;        /**< conversation id */
 
     guint64     rx_frames;      /**< number of received packets */
@@ -153,6 +153,6 @@ add_conversation_table_data_with_conv_id(
     nstime_t *ts,
     SAT_E sat,
     int port_type,
-    gchar* svc_name);
+    dpi_t* dpi_info);
 
 #endif /* __CONVERSATIONS_TABLE_H__ */

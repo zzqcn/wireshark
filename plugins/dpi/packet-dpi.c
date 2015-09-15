@@ -128,7 +128,7 @@ dissect_dpi(tvbuff_t *tvb, packet_info *pinfo, proto_tree *tree, void* data)
     
     (void)data;
 
-    strncpy(pinfo->svc_name, "unknown", 16);
+    //strncpy(pinfo->svc_name, "unknown", 16);
     ip_len = (tvb_get_guint8(tvb, 14) - 64) * 4;
     tran_len = 0;
     if(pinfo->ipproto == IP_PROTO_TCP)
@@ -148,7 +148,12 @@ dissect_dpi(tvbuff_t *tvb, packet_info *pinfo, proto_tree *tree, void* data)
         dpi_ret = camrule_ctx_match(g_cam_ctx, payload, tvb_len, pinfo->ipproto,  &result);
         if(dpi_ret)
         {
-            strncpy(pinfo->svc_name, result.rule->ptnName, 16);
+            pinfo->dpi_info.valid = TRUE;
+            pinfo->dpi_info.class_id = result.rule->svcId;
+            pinfo->dpi_info.pattern_id = result.rule->ptnId;
+            strncpy(pinfo->dpi_info.pattern_name, result.rule->ptnName, DPI_NAME_LEN); 
+            pinfo->dpi_info.priority = result.rule->ptnPri;
+
             col_set_str(pinfo->cinfo, COL_PROTOCOL, result.rule->ptnName);
         }
     }
