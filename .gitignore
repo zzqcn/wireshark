@@ -71,6 +71,17 @@ config.h
 version.h
 doxygen.cfg
 _libs_check_
+ptndef.csv
+wireshark-1.12.6.IAB
+wireshark-1.12.6.IAD
+wireshark-1.12.6.IMB
+wireshark-1.12.6.IMD
+wireshark-1.12.6.PFI
+wireshark-1.12.6.PO
+wireshark-1.12.6.PR
+wireshark-1.12.6.PRI
+wireshark-1.12.6.PS
+
 
 # Tmp files
 *.bak
