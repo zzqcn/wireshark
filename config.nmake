@@ -42,7 +42,7 @@ VERSION_BUILD=$(GIT_REVISION)
 # environment, e.g. "-JackStackBarbecue". Updated by make-version.pl
 # Defaults to the environment variable WIRESHARK_VERSION_EXTRA
 
-VERSION_EXTRA=
+VERSION_EXTRA=$(WIRESHARK_VERSION_EXTRA)
 
 # The version of the wiretap library. Recommended: Leave unchanged.
 WTAP_VERSION_MAJOR=$(VERSION_MAJOR)

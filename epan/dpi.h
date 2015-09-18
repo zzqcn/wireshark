@@ -9,7 +9,7 @@
 #ifndef __DPI_H__
 #define __DPI_H__
 
-#define DPI_NAME_LEN    32
+#define DPI_NAME_LEN    16
 
 typedef struct _dpi_t
 {
@@ -17,9 +17,9 @@ typedef struct _dpi_t
     guint32  class_id;
     guint32  subclass_id;
     guint32  pattern_id;
-    gchar    class_name[DPI_NAME_LEN];
-    gchar    subclass_name[DPI_NAME_LEN];
-    gchar    pattern_name[DPI_NAME_LEN];
+    gchar    class_name[DPI_NAME_LEN+1];
+    gchar    subclass_name[DPI_NAME_LEN+1];
+    gchar    pattern_name[DPI_NAME_LEN+1];
     gint8    priority;
 } dpi_t;
 

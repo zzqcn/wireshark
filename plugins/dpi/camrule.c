@@ -221,10 +221,12 @@ int camrule_compile(camrule_t* rule)
         uint32_t slen = (uint32_t)strlen(rule->ptnStr);
         rule->cpl_ptn_len = slen/2;
         rule->cpl_ptn = (uint8_t*) malloc(rule->cpl_ptn_len);
-        for(i=0; i<slen; i+=2)
+        for(i=0; i<slen-1; i+=2)
         {
             if(rule->ptnStr[i] == '*' || rule->ptnStr[i] == '?')
                 rule->ptnStr[i] = '0';
+            if((i+1)<slen && (rule->ptnStr[i+1] == '*' || rule->ptnStr[i+1] == '?'))
+                rule->ptnStr[i+1] = '0';
 
             //string ss = m_rule.ptnStr.substr(i, 2);
             strncpy(ss, rule->ptnStr+i, 2);
@@ -587,19 +589,24 @@ int camrule_ctx_load(camrule_ctx_t* ctx, const char* path)
         char** s = str_matrix[i];
         int validMask = 0;
         int k, dup;
+        gchar* chn_str;
 
 #define  CHECK_CONTINUE(x)  if(!(x)) continue
 #define  CHECK_BREAK(x)     if(!(x)) break
 
 
-        strcpy(rule.optName, s[CRI_OPT_NAME]);
+        strncpy(rule.optName, s[CRI_OPT_NAME], CAM_OPTNAME_LEN);
         CHECK_CONTINUE(strcmp(rule.optName, "add") == 0);
 
         nVal = strtoul(s[CRI_PTN_ID], 0, 10);
         CHECK_CONTINUE(nVal > 0);
         rule.ptnId    = (uint32_t)nVal;
 
-        strcpy(rule.ptnName, s[CRI_PTN_NAME]);
+        // to support Chinese string
+        chn_str = g_locale_to_utf8(s[CRI_PTN_NAME], -1, NULL, NULL, NULL);
+        strncpy(rule.ptnName, chn_str, CAM_PTNNAME_LEN);
+        g_free(chn_str);
+        //strcpy(rule.ptnName, s[CRI_PTN_NAME]);
         CHECK_CONTINUE(strlen(rule.ptnName) > 0);
 
         nVal = strtoul(s[CRI_SVC_ID], 0, 10);
@@ -632,7 +639,7 @@ int camrule_ctx_load(camrule_ctx_t* ctx, const char* path)
         rule.ptnType      = nVal;
 
         // 不允许前后空格
-        strcpy(rule.ptnStr, s[CRI_PTN_STR]);
+        strncpy(rule.ptnStr, s[CRI_PTN_STR], CAM_PTNSTR_LEN);
         CHECK_CONTINUE(strlen(rule.ptnStr) > 0);
 
         rule.isChkCapital = (s[CRI_IS_CHK_CAPITAL][0] == '1');
@@ -752,13 +759,14 @@ int camrule_ctx_match(camrule_ctx_t* ctx,
                 camrule_match_result_t* result)
 {
     //int ret;
-    uint32_t i, max;
+    uint32_t i;
+    int max;
     //camrule_match_result_t* result;
     
     if(IP_PROTO_TCP != ipproto && IP_PROTO_UDP != ipproto)
         return 0;
     
-    max = CAMRULE_MAX;
+    max = -1;
     for(i=0; i<ctx->rules_cnt; i++)
     {
         if(!ctx->rules[i]->isCheckTCP && ipproto == IP_PROTO_TCP)
@@ -768,14 +776,19 @@ int camrule_ctx_match(camrule_ctx_t* ctx,
 
         if(camrule_match(ctx->rules[i], data, len, result))
         {
-            if(i == 0 || ctx->rules[max]->ptnLowPri < ctx->rules[i]->ptnLowPri)
+            if(max == -1)
                 max = i;
+            else
+            {
+                if(ctx->rules[max]->ptnLowPri < ctx->rules[i]->ptnLowPri)
+                    max = i;
+            }
             if(ctx->rules[max]->ptnLowPri == CAMRULE_LOWPRI_MAX)
                 break;
         }
     }
     
-    if(max != CAMRULE_MAX)
+    if(max != -1)
         return 1;
     
     return 0;

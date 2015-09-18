@@ -43,7 +43,12 @@ udpip_conversation_packet(void *pct, packet_info *pinfo, epan_dissect_t *edt _U_
 {
 	const e_udphdr *udphdr=(const e_udphdr *)vip;
 
-	add_conversation_table_data((conversations_table *)pct, &udphdr->ip_src, &udphdr->ip_dst, udphdr->uh_sport, udphdr->uh_dport, 1, pinfo->fd->pkt_len, &pinfo->rel_ts, SAT_NONE, PT_UDP);
+	//add_conversation_table_data((conversations_table *)pct, &udphdr->ip_src, &udphdr->ip_dst, 
+    //    udphdr->uh_sport, udphdr->uh_dport, 1, pinfo->fd->pkt_len, &pinfo->rel_ts, SAT_NONE, PT_UDP);
+    add_conversation_table_data_with_conv_id((conversations_table *)pct, 
+             &udphdr->ip_src, &udphdr->ip_dst, udphdr->uh_sport, udphdr->uh_dport, 
+            CONV_ID_UNSET, 1, pinfo->fd->pkt_len, &pinfo->rel_ts, 
+            SAT_NONE, PT_UDP, &pinfo->dpi_info);
 
 	return 1;
 }

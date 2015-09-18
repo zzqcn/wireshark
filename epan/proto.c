@@ -3990,6 +3990,7 @@ proto_tree_set_representation_value(proto_item *pi, const char *format, va_list 
 		int               ret = 0;
 		field_info        *fi = PITEM_FINFO(pi);
 		header_field_info *hf;
+        gchar* chn_str = NULL;
 
 		DISSECTOR_ASSERT(fi);
 
@@ -4007,8 +4008,15 @@ proto_tree_set_representation_value(proto_item *pi, const char *format, va_list 
 			ret = (int) (p - fi->rep->representation);
 		}
 
-		/* put in the hf name */
-		ret += g_snprintf(fi->rep->representation + ret, ITEM_LABEL_LENGTH - ret, "%s: ", hf->name);
+		chn_str = g_locale_to_utf8(hf->name, -1,NULL, NULL, NULL);
+        /* put in the hf name */
+        if(chn_str != NULL)
+        {
+            ret += g_snprintf(fi->rep->representation + ret, ITEM_LABEL_LENGTH - ret, "%s: ", chn_str);
+            g_free(chn_str);
+        }
+        else
+            ret += g_snprintf(fi->rep->representation + ret, ITEM_LABEL_LENGTH - ret, "%s: ", hf->name);
 
 		/* If possible, Put in the value of the string */
 		if (ret < ITEM_LABEL_LENGTH) {
@@ -5142,6 +5150,7 @@ proto_register_field_array(const int parent, hf_register_info *hf, const int num
 
 	proto = find_protocol_by_id(parent);
 	for (i = 0; i < num_records; i++, ptr++) {
+        gchar* chn_str = NULL;
 		/*
 		 * Make sure we haven't registered this yet.
 		 * Most fields have variables associated with them
@@ -5156,6 +5165,13 @@ proto_register_field_array(const int parent, hf_register_info *hf, const int num
 				ptr->hfinfo.abbrev);
 			return;
 		}
+
+        chn_str = g_locale_to_utf8(ptr->hfinfo.name, -1, NULL, NULL, NULL);        
+        if(chn_str != NULL)
+        {
+            ptr->hfinfo.name = (const char*)chn_str;
+            //g_free(chn_str); chn_str = NULL;
+        }
 
 		*ptr->p_id = proto_register_field_common(proto, &ptr->hfinfo, parent);
 	}

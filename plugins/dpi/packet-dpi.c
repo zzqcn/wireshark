@@ -84,7 +84,7 @@ proto_register_dpi(void)
             &hf_dpi_ptnName,
             {
                 "Pattern Name", "dpi.ptnname",
-                FT_STRING, BASE_NONE,
+                FT_STRING, STR_UNICODE,
                 NULL, 0x0, NULL, HFILL
             }
         },
@@ -128,7 +128,8 @@ dissect_dpi(tvbuff_t *tvb, packet_info *pinfo, proto_tree *tree, void* data)
     
     (void)data;
 
-    //strncpy(pinfo->svc_name, "unknown", 16);
+    memset(&pinfo->dpi_info, 0, sizeof(dpi_t));
+
     ip_len = (tvb_get_guint8(tvb, 14) - 64) * 4;
     tran_len = 0;
     if(pinfo->ipproto == IP_PROTO_TCP)
