@@ -18,7 +18,7 @@ COMMON_CFLAGS=\
 	/I. /I.. /I../wiretap $(GLIB_CFLAGS) \
 	$(ZLIB_CFLAGS) $(C_ARES_CFLAGS) $(ADNS_CFLAGS) \
 	$(LUA_CFLAGS) $(GNUTLS_CFLAGS) /I$(PCAP_DIR)\include \
-	$(PYTHON_CFLAGS) $(SMI_CFLAGS) $(GEOIP_CFLAGS)
+	$(PYTHON_CFLAGS) $(SMI_CFLAGS) $(GEOIP_CFLAGS) $(SNIPER_CFLAGS)
 
 #
 # These are the flags for generated source files; we don't include

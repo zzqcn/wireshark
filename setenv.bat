@@ -15,6 +15,7 @@ SET WIRESHARK_LIB_DIR=D:\dev\Wireshark-win64-libs-1.12
 SET VISUALSTUDIOVERSION=10.0
 SET PLATFORM=X64
 SET WIRESHARK_VERSION_EXTRA=-zzq-x64
+SET SNIPER=1
 
 ECHO …Ë÷√ Visual Studio environment...
 CALL "C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\vcvarsall.bat" amd64

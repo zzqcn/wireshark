@@ -31,7 +31,7 @@ extern const value_string E164_country_code_value[];
 extern const value_string E164_International_Networks_vals[];
 
 typedef enum {
-	NONE,
+    NONE,
 	CALLING_PARTY_NUMBER,
 	CALLED_PARTY_NUMBER
 	} e164_number_type_t;

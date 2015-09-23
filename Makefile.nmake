@@ -44,6 +44,8 @@ GENERATED_CFLAGS=\
 	$(C_ARES_CFLAGS) $(ADNS_CFLAGS) $(GNUTLS_CFLAGS) \
 	$(PYTHON_CFLAGS) $(SMI_CFLAGS) $(GEOIP_CFLAGS) $(WINSPARKLE_CFLAGS)
 
+#!ERROR $(GENERATED_CFLAGS)
+
 CFLAGS=$(WARNINGS_ARE_ERRORS) $(GENERATED_CFLAGS)
 
 .c.obj::
@@ -210,9 +212,11 @@ randpkt_LIBS= wiretap\wiretap-$(WTAP_VERSION).lib \
 	wsutil\libwsutil.lib \
 	$(GLIB_LIBS)
 
-EXECUTABLES=wireshark.exe tshark.exe tfshark.exe rawshark.exe \
-	capinfos.exe captype.exe editcap.exe mergecap.exe text2pcap.exe \
-	randpkt.exe reordercap.exe dumpcap.exe dftest.exe
+#EXECUTABLES=wireshark.exe tshark.exe tfshark.exe rawshark.exe \
+#	capinfos.exe captype.exe editcap.exe mergecap.exe text2pcap.exe \
+#	randpkt.exe reordercap.exe dumpcap.exe dftest.exe
+
+EXECUTABLES=wireshark.exe
 
 !IFDEF QT5_BASE_DIR
 EXECUTABLES=$(EXECUTABLES) qtshark.exe
@@ -225,7 +229,9 @@ RESOURCES=image\wireshark.res image\file_dlg_win32.res \
 	image\rawshark.res image\reordercap.res image\libwsutil.res
 
 
-all: $(LIBS_CHECK) config.h ui\qt\config.pri tools image codecs $(C_ARES_DLL) $(ADNS_DLL) $(ZLIB_DLL) wsutil wiretap filetap epan $(EXECUTABLES) wireshark.bsc $(RESOURCES) help install-all
+#all: $(LIBS_CHECK) config.h ui\qt\config.pri tools image codecs $(C_ARES_DLL) $(ADNS_DLL) $(ZLIB_DLL) wsutil wiretap filetap epan $(EXECUTABLES) wireshark.bsc $(RESOURCES) help install-all
+all: $(LIBS_CHECK) config.h tools image codecs $(C_ARES_DLL) $(ADNS_DLL) $(ZLIB_DLL) wsutil wiretap filetap epan $(EXECUTABLES) wireshark.bsc $(RESOURCES) install-all
+
 
 !IFDEF MAKENSIS
 packaging: all

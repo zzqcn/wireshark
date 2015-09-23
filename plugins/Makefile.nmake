@@ -15,6 +15,9 @@ PLUGIN_LIST = \
 	opcua       \
 	profinet    \
 	stats_tree  \
+!IFDEF SNIPER
+	sniper      \
+!ENDIF
 	unistim     \
 	wimax       \
 	wimaxasncp  \

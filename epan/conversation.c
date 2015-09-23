@@ -705,6 +705,8 @@ conversation_new(const guint32 setup_frame, const address *addr1, const address 
 
 	conversation = se_new(conversation_t);
 	memset(conversation, 0, sizeof(conversation_t));
+    // XXX just test SNIPER macro has been defined
+    //conversation->dpi_private.FLowNodeAddr = 0;
 
 	conversation->index = new_index;
 	conversation->setup_frame = conversation->last_frame = setup_frame;

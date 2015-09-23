@@ -9,7 +9,11 @@
 #ifndef __DPI_H__
 #define __DPI_H__
 
+#ifndef SNIPER
 #define DPI_NAME_LEN    16
+#else
+#define DPI_NAME_LEN    64
+#endif
 
 typedef struct _dpi_t
 {

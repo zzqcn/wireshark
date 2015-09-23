@@ -24,6 +24,11 @@
 #define __CONVERSATION_H__
 
 #include "ws_symbol_export.h"
+#ifdef SNIPER
+//#include "sp.h"
+#include "sp_ident.h"
+#endif
+
 
 #ifdef __cplusplus
 extern "C" {
@@ -82,6 +87,10 @@ typedef struct conversation {
 	dissector_handle_t dissector_handle;
 								/** handle for protocol dissector client associated with conversation */
 	guint	options;			/** wildcard flags */
+#ifdef SNIPER
+    SP_IDENTRESULT_S dpi_result;
+    SP_PRIVATE_DATA_S dpi_private;
+#endif
 	conversation_key *key_ptr;	/** pointer to the key for this conversation */
 } conversation_t;
 
