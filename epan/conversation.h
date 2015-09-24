@@ -25,7 +25,6 @@
 
 #include "ws_symbol_export.h"
 #ifdef SNIPER
-//#include "sp.h"
 #include "sp_ident.h"
 #endif
 
@@ -90,6 +89,7 @@ typedef struct conversation {
 #ifdef SNIPER
     SP_IDENTRESULT_S dpi_result;
     SP_PRIVATE_DATA_S dpi_private;
+    SP_HTTP_DATA_S dpi_http_data;
 #endif
 	conversation_key *key_ptr;	/** pointer to the key for this conversation */
 } conversation_t;

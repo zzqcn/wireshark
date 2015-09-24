@@ -72,6 +72,7 @@ version.h
 doxygen.cfg
 _libs_check_
 ptndef.csv
+sniper.klp
 wireshark-1.12.6.IAB
 wireshark-1.12.6.IAD
 wireshark-1.12.6.IMB
@@ -82,6 +83,7 @@ wireshark-1.12.6.PR
 wireshark-1.12.6.PRI
 wireshark-1.12.6.PS
 wireshark-1.12.6.WK3
+wireshark-1.12.6.SearchResults
 
 # Tmp files
 *.bak

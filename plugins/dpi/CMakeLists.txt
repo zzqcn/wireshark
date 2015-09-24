@@ -20,7 +20,8 @@
 #
 
 set(DISSECTOR_SRC
-    camrule.c
+	camrule.c
+	parse.c
 	packet-dpi.c
 )
 

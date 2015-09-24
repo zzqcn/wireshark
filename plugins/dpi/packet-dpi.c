@@ -33,6 +33,7 @@
 //#include <epan/dissectors/packet-tcp.h>
 #include "packet-dpi.h"
 #include "camrule.h"
+#include "parse.h"
 
 
 //#define DPI_PORT    9877
@@ -51,6 +52,7 @@ static int hf_dpi_ptn = -1;
 
 static gint ett_dpi = -1;
 camrule_ctx_t* g_cam_ctx = NULL;
+
 
 
 void proto_register_dpi(void);
@@ -121,44 +123,41 @@ proto_register_dpi(void)
 static int
 dissect_dpi(tvbuff_t *tvb, packet_info *pinfo, proto_tree *tree, void* data)
 {
-    int dpi_ret;
-    gint mac_len = 14, ip_len, tran_len, hdr_len, tvb_len;
+    int res, dpi_ret;
     guint8 payload[1500];
     camrule_match_result_t result;
+    dpi_packet_t pkt;
     
     (void)data;
 
     memset(&pinfo->dpi_info, 0, sizeof(dpi_t));
+    memset(&pkt, 0, sizeof(dpi_packet_t));
+    dpi_ret = 0;
 
-    ip_len = (tvb_get_guint8(tvb, 14) - 64) * 4;
-    tran_len = 0;
-    if(pinfo->ipproto == IP_PROTO_TCP)
-        tran_len = (tvb_get_guint8(tvb, 46) / 16) * 4;
-    else if(pinfo->ipproto == IP_PROTO_UDP)
-        tran_len = 8;
-    else
-    {
-        if(!tree)
-            goto END;
-    }
+    pkt.payload_len = pkt.payload_offset = -1;
+    res = get_dpi_packet_info(tvb, pinfo, &pkt);
+    if(res != 0 || pkt.payload == NULL || 
+       pkt.payload_offset == -1 || pkt.payload_len == -1)
+        goto TREE;
+    if(pkt.tran_type != IP_PROTO_TCP && pkt.tran_type != IP_PROTO_UDP)
+        goto TREE;
+
+    if(tvb_memcpy(tvb, payload, pkt.payload_offset, pkt.payload_len) == NULL)
+        goto TREE;
     
-    hdr_len = mac_len + ip_len + tran_len;
-    tvb_len = tvb_reported_length_remaining(tvb, hdr_len);
-    if(tvb_memcpy(tvb, payload, hdr_len, tvb_len) != NULL)
+    dpi_ret = camrule_ctx_match(g_cam_ctx, payload, pkt.payload_len, pinfo->ipproto, &result);
+    if(dpi_ret)
     {
-        dpi_ret = camrule_ctx_match(g_cam_ctx, payload, tvb_len, pinfo->ipproto,  &result);
-        if(dpi_ret)
-        {
-            pinfo->dpi_info.valid = TRUE;
-            pinfo->dpi_info.class_id = result.rule->svcId;
-            pinfo->dpi_info.pattern_id = result.rule->ptnId;
-            strncpy(pinfo->dpi_info.pattern_name, result.rule->ptnName, DPI_NAME_LEN); 
-            pinfo->dpi_info.priority = result.rule->ptnPri;
+        pinfo->dpi_info.valid = TRUE;
+        pinfo->dpi_info.class_id = result.rule->svcId;
+        pinfo->dpi_info.pattern_id = result.rule->ptnId;
+        strncpy(pinfo->dpi_info.pattern_name, result.rule->ptnName, DPI_NAME_LEN); 
+        pinfo->dpi_info.priority = result.rule->ptnPri;
 
-            col_set_str(pinfo->cinfo, COL_PROTOCOL, result.rule->ptnName);
-        }
+        col_set_str(pinfo->cinfo, COL_PROTOCOL, result.rule->ptnName);
     }
 
+TREE:
     /* proto details display */
     if(tree)
     {
@@ -179,7 +178,7 @@ dissect_dpi(tvbuff_t *tvb, packet_info *pinfo, proto_tree *tree, void* data)
             sub_tree = proto_tree_add_uint(dpi_tree, hf_dpi_svcId, tvb, 0, 0, result.rule->svcId);
             sub_tree = proto_tree_add_uint(dpi_tree, hf_dpi_ptnId, tvb, 0, 0, result.rule->ptnId);
             sub_tree = proto_tree_add_string(dpi_tree, hf_dpi_ptnName, tvb, 0, 0, result.rule->ptnName);
-            proto_tree_add_item(dpi_tree, hf_dpi_ptn, tvb, hdr_len+result.start, 
+            proto_tree_add_item(dpi_tree, hf_dpi_ptn, tvb, pkt.payload_offset + result.start, 
                                     result.rule->cpl_ptn_len, ENC_NA);
             proto_item_append_text(dpi_tree, ", PtnId: %u", result.rule->ptnId);
             goto END;

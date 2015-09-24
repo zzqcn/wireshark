@@ -40,7 +40,7 @@
 #include <epan/prefs.h>
 #include <epan/conversation.h>
 #include <epan/tvbuff-int.h>
-#include "sp.h"
+#include <sp.h>
 #include "packet-sniper.h"
 
 
@@ -165,7 +165,7 @@ dissect_dpi(tvbuff_t *tvb, packet_info *pinfo, proto_tree *tree, void* data)
     memset(&pkt, 0, sizeof(SP_PACKET_S));
     memset(&pinfo->dpi_info, 0, sizeof(dpi_t));
 
-    goto END;
+    //goto END;
 
     // XXX BUG: check it's an IP pkt.
     if(pinfo->fd->lnk_t != WTAP_ENCAP_ETHERNET)
@@ -174,7 +174,7 @@ dissect_dpi(tvbuff_t *tvb, packet_info *pinfo, proto_tree *tree, void* data)
     if(eth_t != 0x0800)
         goto END;
 
-    goto END;
+    //goto END;
 
     ip_len = (tvb_get_guint8(tvb, 14) - 64) * 4;
     tran_len = 0;
@@ -231,7 +231,9 @@ dissect_dpi(tvbuff_t *tvb, packet_info *pinfo, proto_tree *tree, void* data)
     if(pkt.PayloadLen > 0 && sp_result->Status != SP_IDENTSTATUS_KNOWN &&
        sp_result->Status != SP_IDENTSTATUS_UNKNOWN)
     {
-        err = SP_Ident(&pkt, &conv->dpi_private, sp_result, 0); // 1 thread
+        SP_HTTPANCHORINFO_S http_info;
+        memset(&http_info, 0, sizeof(SP_HTTPANCHORINFO_S));
+        err = SP_Ident(&pkt, &conv->dpi_private, sp_result, 0, &http_info, &conv->dpi_http_data); // 1 thread
         if(err != SP_OK)
             goto END;
     }

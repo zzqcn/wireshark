@@ -2310,7 +2310,7 @@ init_default_col_size(GtkWidget *view)
     default_col_size[DST_ADR_COLUMN]  = default_col_size[SRC_ADR_COLUMN];
     default_col_size[SRC_PORT_COLUMN] = get_default_col_size(view, "000000");
     default_col_size[DST_PORT_COLUMN] = default_col_size[SRC_PORT_COLUMN];
-    default_col_size[SVC_COLUMN] = get_default_col_size(view, "00000000");
+    default_col_size[SVC_COLUMN] = get_default_col_size(view, "0000000000000000");
     default_col_size[PACKETS_COLUMN]  = get_default_col_size(view, "00 000 000");
     default_col_size[BYTES_COLUMN]    = get_default_col_size(view, "0 000 000 000");
     default_col_size[PKT_AB_COLUMN]   = default_col_size[PACKETS_COLUMN];

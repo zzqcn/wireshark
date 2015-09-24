@@ -27,6 +27,7 @@ PLUGIN_NAME = dpi
 # Non-generated sources to be scanned for registration routines
 NONGENERATED_REGISTER_C_FILES = \
 	camrule.c \
+	parse.c \
 	packet-dpi.c
 
 # Non-generated sources
