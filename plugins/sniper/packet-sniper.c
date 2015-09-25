@@ -25,7 +25,6 @@
 
 #include "config.h"
 #ifdef _MSC_VER
-  //#define WIN32_LEAN_AND_MEAN
   #include <windows.h>
 #endif
 
@@ -36,12 +35,14 @@
 #include <glib.h>
 #include <wiretap/wtap.h>
 #include <epan/packet.h>
+#include <epan/etypes.h>
 #include <epan/ipproto.h>
 #include <epan/prefs.h>
 #include <epan/conversation.h>
 #include <epan/tvbuff-int.h>
 #include <sp.h>
 #include "packet-sniper.h"
+#include "parse.h"
 
 
 
@@ -150,55 +151,32 @@ proto_register_dpi(void)
 static int
 dissect_dpi(tvbuff_t *tvb, packet_info *pinfo, proto_tree *tree, void* data)
 {
-    int dpi_ret = 0;
-    gint eth_t, mac_len = 14, ip_len, tran_len, hdr_len, tvb_len;
-    //guint8 payload[1500];
+    int res, dpi_ret;
     conversation_t* conv;
     SP_PACKET_S pkt;
+    dpi_packet_t dpi_pkt;
     SP_UINT8 L3 = SP_L3PROTOCOL_ANY, L4 = SP_IPPROTO_ANY;
     port_type ptype;
     SP_IDENTRESULT_S *sp_result = NULL; 
     SP_INT32 err = SP_OK;
     
+    
     (void)data;
 
-    memset(&pkt, 0, sizeof(SP_PACKET_S));
     memset(&pinfo->dpi_info, 0, sizeof(dpi_t));
+    memset(&dpi_pkt, 0, sizeof(dpi_packet_t));
+    memset(&pkt, 0, sizeof(dpi_packet_t));
+    dpi_ret = 0;
 
-    //goto END;
+    dpi_pkt.payload_len = dpi_pkt.payload_offset = -1;
+    res = get_dpi_packet_info(tvb, pinfo, &dpi_pkt);
+    if(res != 0 || dpi_pkt.payload == NULL || 
+       dpi_pkt.payload_offset == -1 || dpi_pkt.payload_len == -1)
+        goto TREE;
+    if(dpi_pkt.tran_type != IP_PROTO_TCP && dpi_pkt.tran_type != IP_PROTO_UDP)
+        goto TREE;
 
-    // XXX BUG: check it's an IP pkt.
-    if(pinfo->fd->lnk_t != WTAP_ENCAP_ETHERNET)
-        goto END;
-    eth_t = tvb_get_ntohs(tvb, 12);
-    if(eth_t != 0x0800)
-        goto END;
-
-    //goto END;
-
-    ip_len = (tvb_get_guint8(tvb, 14) - 64) * 4;
-    tran_len = 0;
-    if(pinfo->ipproto == IP_PROTO_TCP)
-    {
-        L4 = SP_IPPROTO_TCP;
-        ptype = PT_TCP;
-        tran_len = (tvb_get_guint8(tvb, 46) / 16) * 4;
-    }
-    else if(pinfo->ipproto == IP_PROTO_UDP)
-    {
-        L4 = SP_IPPROTO_UDP;
-        ptype = PT_UDP;
-        tran_len = 8;
-    }
-    else
-    {
-        if(!tree)
-            goto END;
-    }
-
-    hdr_len = mac_len + ip_len + tran_len;
-    tvb_len = tvb_reported_length_remaining(tvb, hdr_len);
-
+#if 0
     // construct SP_PACKET_S
     // XXX BUG!!!
     pkt.EthHdr = (const SP_UINT8*)tvb->real_data;
@@ -216,7 +194,47 @@ dissect_dpi(tvbuff_t *tvb, packet_info *pinfo, proto_tree *tree, void* data)
     pkt.Dir = 0; // TODO
     pkt.Layer3 = L3;
     pkt.Layer4 = L4;
+#endif
 
+    // XXX BUG!!!
+    pkt.EthHdr = (const SP_UINT8*)dpi_pkt.eth_hdr;
+    if(dpi_pkt.net_type == ETHERTYPE_IP)
+    {
+        pkt.Layer3 = SP_L3PROTOCOL_IPV4;
+        pkt.IpHdr = (const SP_UINT8*)dpi_pkt.ipv4_hdr;
+    }
+    else if(dpi_pkt.net_type == ETHERTYPE_IPv6)
+    {
+        pkt.Layer3 = SP_L3PROTOCOL_IPV6;
+        pkt.IpHdr = (const SP_UINT8*)dpi_pkt.ipv6_hdr;
+    }
+    else
+        goto TREE;
+    if(dpi_pkt.tran_type == IP_PROTO_TCP)
+    {
+        pkt.Layer4 = SP_IPPROTO_TCP;
+        pkt.TranHdr = (const SP_UINT8*)dpi_pkt.tcp_hdr;
+    }
+    else if(dpi_pkt.tran_type == IP_PROTO_UDP)
+    {
+        pkt.Layer4 = SP_IPPROTO_UDP;
+        pkt.TranHdr = (const SP_UINT8*)dpi_pkt.udp_hdr;
+    }
+    else
+        goto TREE;
+    pkt.Payload = dpi_pkt.payload;
+    pkt.PayloadLen = dpi_pkt.payload_len;
+    if(pinfo->net_src.type == AT_IPv4 && pinfo->net_src.len == 4)
+        memcpy(&pkt.SrcIp.Ip, pinfo->net_src.data, 4);
+    else if(pinfo->net_src.type == AT_IPv6 && pinfo->net_src.len == 16)
+        memcpy(&pkt.SrcIp.Ip6, pinfo->net_src.data, 16);
+    if(pinfo->net_dst.type == AT_IPv4 && pinfo->net_dst.len == 4)
+        memcpy(&pkt.DstIp.Ip, pinfo->net_dst.data, 4);
+    else if(pinfo->net_dst.type == AT_IPv6 && pinfo->net_dst.len == 16)
+        memcpy(&pkt.DstIp.Ip6, pinfo->net_dst.data, 16);
+    pkt.SrcPort = pinfo->srcport;
+    pkt.DstPort = pinfo->destport;
+    pkt.Dir = 0; // TODO
 
     conv = find_conversation(pinfo->fd->num, &pinfo->src, &pinfo->dst, ptype, 
                 pinfo->srcport, pinfo->destport, 0);
@@ -232,6 +250,7 @@ dissect_dpi(tvbuff_t *tvb, packet_info *pinfo, proto_tree *tree, void* data)
        sp_result->Status != SP_IDENTSTATUS_UNKNOWN)
     {
         SP_HTTPANCHORINFO_S http_info;
+        
         memset(&http_info, 0, sizeof(SP_HTTPANCHORINFO_S));
         err = SP_Ident(&pkt, &conv->dpi_private, sp_result, 0, &http_info, &conv->dpi_http_data); // 1 thread
         if(err != SP_OK)
@@ -241,17 +260,27 @@ dissect_dpi(tvbuff_t *tvb, packet_info *pinfo, proto_tree *tree, void* data)
     if(sp_result->Status != SP_IDENTSTATUS_CONTINUE && 
        sp_result->Status != SP_IDENTSTATUS_UNKNOWN)
     {
+        gchar tmp[SP_MAX_SVC_NAME], *chn_str;
+        
         dpi_ret = 1;
         pinfo->dpi_info.valid = TRUE;
         pinfo->dpi_info.class_id = sp_result->ClassId;
         pinfo->dpi_info.subclass_id = sp_result->SubClassId;
         pinfo->dpi_info.pattern_id = sp_result->PatternId;
         pinfo->dpi_info.priority = sp_result->PtnPri;
-        SP_GetPatternName(sp_result->PatternId, pinfo->dpi_info.pattern_name, NULL);
-
-        col_set_str(pinfo->cinfo, COL_PROTOCOL, pinfo->dpi_info.pattern_name);
+        err = SP_GetPatternName(sp_result->PatternId, tmp, NULL);
+        if(err == SP_OK)
+        {
+            chn_str = g_locale_to_utf8(tmp, -1, NULL, NULL, NULL);
+            if(chn_str != NULL)
+            {
+                strncpy(pinfo->dpi_info.pattern_name, chn_str, DPI_NAME_LEN);
+                col_set_str(pinfo->cinfo, COL_PROTOCOL, chn_str);
+            }
+        }
     }
 
+TREE:
     /* proto details display */
     if(tree)
     {
@@ -271,6 +300,7 @@ dissect_dpi(tvbuff_t *tvb, packet_info *pinfo, proto_tree *tree, void* data)
         {
             sub_tree = proto_tree_add_uint(dpi_tree, hf_dpi_classId, tvb, 0, 0, pinfo->dpi_info.class_id);
             sub_tree = proto_tree_add_uint(dpi_tree, hf_dpi_patternId, tvb, 0, 0, pinfo->dpi_info.pattern_id);
+            
             sub_tree = proto_tree_add_string(dpi_tree, hf_dpi_ptnName, tvb, 0, 0, pinfo->dpi_info.pattern_name);
             //proto_tree_add_item(dpi_tree, hf_dpi_ptn, tvb, hdr_len+result.start, 
             //                        result.rule->cpl_ptn_len, ENC_NA);

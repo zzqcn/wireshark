@@ -26,6 +26,7 @@ PLUGIN_NAME = sniper
 
 # Non-generated sources to be scanned for registration routines
 NONGENERATED_REGISTER_C_FILES = \
+	parse.c \
 	packet-sniper.c
 
 # Non-generated sources
