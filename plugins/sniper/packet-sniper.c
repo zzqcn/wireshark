@@ -165,7 +165,7 @@ dissect_dpi(tvbuff_t *tvb, packet_info *pinfo, proto_tree *tree, void* data)
 
     memset(&pinfo->dpi_info, 0, sizeof(dpi_t));
     memset(&dpi_pkt, 0, sizeof(dpi_packet_t));
-    memset(&pkt, 0, sizeof(dpi_packet_t));
+    memset(&pkt, 0, sizeof(SP_PACKET_S));
     dpi_ret = 0;
 
     dpi_pkt.payload_len = dpi_pkt.payload_offset = -1;

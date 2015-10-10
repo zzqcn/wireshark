@@ -41,7 +41,7 @@ typedef struct dpi_ether_hdr
 } dpi_ether_hdr_t;
 
 
-struct dpi_vlan_hdr
+typedef struct dpi_vlan_hdr
 {
     guint16 vlan_tci;    /**< Priority (3) + CFI (1) + Identifier Code (12) */
     guint16 eth_proto;   /**< Ethernet type of encapsulated frame. */
@@ -94,7 +94,7 @@ The proposed GRE header will have the following format:
 #define GRE_SEQUENCE            0x1000
 
 
-struct dpi_gre_hdr
+typedef struct dpi_gre_hdr
 {
     guint16  flags_ver;  /**< 标志与版本 */
     guint16  type;       /**< 上层协议类型 */
