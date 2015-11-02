@@ -1,4 +1,4 @@
-@ECHO off
+Ôªø@ECHO off
 
 REM Batch script for compiling Wireshark on Windows.
 REM I have disabled the Qt version build because it's meaningful
@@ -18,12 +18,12 @@ SET WIRESHARK_VERSION_EXTRA=-zzq-x64
 SET SNIPER=1
 SET DPI=1
 
-ECHO …Ë÷√ Visual Studio environment...
+ECHO setup Visual Studio environment...
 CALL "C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\vcvarsall.bat" amd64
 
 title Command Prompt (MSVC++ 2010 64bit)
 
-REM wiresharkø‚œ¬‘ÿµÿ÷∑
+REM wiresharkÂ∫ì‰∏ãËΩΩÂú∞ÂùÄ
 REM http://anonsvn.wireshark.org/wireshark-$WIRESHARK_TARGET_PLATFORM-libs/tags/$DOWNLOAD_TAG/packages/
 
 GOTO :eof
