@@ -30,11 +30,11 @@ WS_DLL_PUBLIC
 wmem_allocator_t *
 wmem_packet_scope(void);
 
-WS_DLL_LOCAL
+WS_DLL_PUBLIC
 void
 wmem_enter_packet_scope(void);
 
-WS_DLL_LOCAL
+WS_DLL_PUBLIC
 void
 wmem_leave_packet_scope(void);
 
@@ -44,11 +44,11 @@ WS_DLL_PUBLIC
 wmem_allocator_t *
 wmem_file_scope(void);
 
-WS_DLL_LOCAL
+WS_DLL_PUBLIC
 void
 wmem_enter_file_scope(void);
 
-WS_DLL_LOCAL
+WS_DLL_PUBLIC
 void
 wmem_leave_file_scope(void);
 
