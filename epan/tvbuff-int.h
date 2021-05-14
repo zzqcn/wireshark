@@ -90,7 +90,7 @@ WS_DLL_PUBLIC tvbuff_t *tvb_new(const struct tvb_ops *ops);
 
 tvbuff_t *tvb_new_proxy(tvbuff_t *backing);
 
-void tvb_add_to_chain(tvbuff_t *parent, tvbuff_t *child);
+WS_DLL_PUBLIC void tvb_add_to_chain(tvbuff_t *parent, tvbuff_t *child);
 
 guint tvb_offset_from_real_beginning_counter(const tvbuff_t *tvb, const guint counter);
 
