@@ -1,0 +1,4 @@
+1, weibo\.com, 100, 微博
+2, passport\.weibo\.com, 101, 微博passport
+3, foo\.com, 200, http_foo
+4, bar\.com, 201, http_bar

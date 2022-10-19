@@ -1,0 +1,39 @@
+DPI(Deep Packet Inspection) demo.
+
+This demo demonstrates how to write a wireshark plugin with simple DPI function.
+By now, I just run & test this demo on Windows 11 with Visual Studio 2019 installed.
+Check my blog for more details.
+
+Features
+=========
+
+- It's a post-dissector
+- Match HTTP Host field with DPI rules
+- Support multiple regex matching by hyperscan
+- Show DPI result in proto tree panel
+- Support user-defined rule file
+
+Rule Syntax
+============
+
+DPI rule file syntax:
+
+- Should be UTF8 text file
+- Must be in wireshark home directory at runtime(e.g. D:\tools\Wireshark,
+  or D:\dev\opensource\wireshark-build\run\Debug)
+- One rule per line
+- Comment character is '#'
+- Seperator characters between fields are ", \t\r\n"
+- Every rule includes 4 field: {id, regex, priority, name},
+  - id: must be unique
+  - regex: regex for matching HTTP Host field, pay attention to escape characters
+  - priority: should be unique
+  - name: string to show when regex matched
+
+Rule sample file 'rules.txt' is in current directory.
+
+Compile
+========
+
+Before compiling, you should build or install hyperscan first, and adjust CMakeLists.txt
+depend on your situation.
