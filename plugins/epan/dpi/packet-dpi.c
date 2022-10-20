@@ -56,12 +56,17 @@ dissect_dpi(tvbuff_t *tvb, packet_info *pinfo _U_, proto_tree *tree, void *data 
                         proto_tree *dpi_tree =
                             proto_tree_add_item(tree, proto_dpi, tvb, 0, -1, ENC_NA);
 
+                        tvbuff_t* ds;
+                        ds = get_data_source_tvb_by_name(pinfo, "Reassembled TCP");
+                        if (NULL == ds)
+                            ds = tvb;
+
                         rule = dpi_match(ti->finfo->rep->representation, (uint32_t)strlen(ti->finfo->rep->representation));
                         if (rule != NULL)
                         {
                             proto_item_add_subtree(dpi_tree, ett_dpi);
-                            proto_tree_add_uint(dpi_tree, hf_dpi_ptn_id, tvb, 0, 0, rule->id);
-                            proto_tree_add_string(dpi_tree, hf_dpi_ptn_name, tvb, ti->finfo->start, ti->finfo->length, rule->name);
+                            proto_tree_add_uint(dpi_tree, hf_dpi_ptn_id, ds, 0, 0, rule->id);
+                            proto_tree_add_string(dpi_tree, hf_dpi_ptn_name, ds, ti->finfo->start, ti->finfo->length, rule->name);
                             proto_item_append_text(dpi_tree, ", match %s", rule->name);
                         }
                         else
