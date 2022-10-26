@@ -12,7 +12,8 @@
 
 #include <epan/packet.h>
 
-#define FOO_PORT 1234
+#define FOO_MAGIC 0xfee1900d
+#define FOO_MIN_LEN 12
 
 static int proto_foo = -1;
 
@@ -45,10 +46,9 @@ static int *const bits[] = {
 };
 
 static int
-dissect_foo(tvbuff_t *tvb, packet_info *pinfo, proto_tree *tree, void *data _U_)
+dissect_foo_common(tvbuff_t *tvb, packet_info *pinfo, proto_tree *tree, gint offset)
 {
-    gint offset = 0;
-    guint8 packet_type = tvb_get_guint8(tvb, 0);
+    guint8 packet_type = tvb_get_guint8(tvb, offset);
 
     col_set_str(pinfo->cinfo, COL_PROTOCOL, "FOO");
     /* Clear the info column */
@@ -71,6 +71,23 @@ dissect_foo(tvbuff_t *tvb, packet_info *pinfo, proto_tree *tree, void *data _U_)
     offset += 4;
 
     return tvb_captured_length(tvb);
+}
+
+static gboolean
+dissect_foo_heur(tvbuff_t *tvb, packet_info *pinfo, proto_tree *tree, void *data _U_)
+{
+    guint32 magic;
+
+    if (tvb_captured_length(tvb) < FOO_MIN_LEN)
+        return FALSE;
+
+    magic = tvb_get_ntohl(tvb, 0);
+    if (magic != FOO_MAGIC)
+        return FALSE;
+
+    dissect_foo_common(tvb, pinfo, tree, 4);
+
+    return TRUE;
 }
 
 void proto_register_foo(void)
@@ -180,8 +197,5 @@ void proto_register_foo(void)
 
 void proto_reg_handoff_foo(void)
 {
-    static dissector_handle_t foo_handle;
-
-    foo_handle = create_dissector_handle(dissect_foo, proto_foo);
-    dissector_add_uint("udp.port", FOO_PORT, foo_handle);
+    heur_dissector_add("udp", dissect_foo_heur, "FOO over UDP", "foo_udp", proto_foo, HEURISTIC_ENABLE);
 }

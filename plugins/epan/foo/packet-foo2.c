@@ -24,7 +24,7 @@ static int hf_foo_ipaddr = -1;
 static gint ett_foo = -1;
 
 static int
-dissect_foo(tvbuff_t *tvb, packet_info *pinfo, proto_tree *tree _U_, void *data _U_)
+dissect_foo(tvbuff_t *tvb, packet_info *pinfo, proto_tree *tree, void *data _U_)
 {
     gint offset = 0;
 

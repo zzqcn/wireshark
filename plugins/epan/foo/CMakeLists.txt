@@ -13,7 +13,7 @@ include(WiresharkPlugin)
 set_module_info(foo 0 0 1 0)
 
 set(DISSECTOR_SRC
-	packet-foo2.c
+	packet-foo6.c
 )
 
 set(PLUGIN_FILES
