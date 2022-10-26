@@ -1,20 +1,10 @@
-/* packet-gryphon.c
- *
- * Updated routines for Gryphon protocol packet dissection
- * By Mark C. <markc@dgtech.com>
- * Copyright (C) 2018 DG Technologies, Inc. (Dearborn Group, Inc.) USA
- *
- * Routines for Gryphon protocol packet disassembly
- * By Steve Limkemann <stevelim@dgtech.com>
- * Copyright 1998 Steve Limkemann
+/* packet-dpi.c
  *
  * Wireshark - Network traffic analyzer
  * By Gerald Combs <gerald@wireshark.org>
  * Copyright 1998 Gerald Combs
  *
  * SPDX-License-Identifier: GPL-2.0-or-later
- *
- * Specification: http://www.dgtech.com/product/gryphon/manual/html/GCprotocol/
  *
  */
 
@@ -56,7 +46,7 @@ dissect_dpi(tvbuff_t *tvb, packet_info *pinfo _U_, proto_tree *tree, void *data 
                         proto_tree *dpi_tree =
                             proto_tree_add_item(tree, proto_dpi, tvb, 0, -1, ENC_NA);
 
-                        tvbuff_t* ds;
+                        tvbuff_t *ds;
                         ds = get_data_source_tvb_by_name(pinfo, "Reassembled TCP");
                         if (NULL == ds)
                             ds = tvb;

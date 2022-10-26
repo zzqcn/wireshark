@@ -2,7 +2,8 @@ DPI(Deep Packet Inspection) demo.
 
 This demo demonstrates how to write a wireshark plugin with simple DPI function.
 By now, I just run & test this demo on Windows 11 with Visual Studio 2019 installed.
-Check my blog for more details.
+
+See my article https://www.yuque.com/zzqcn/wireshark/snyg6w for details.
 
 Features
 =========
